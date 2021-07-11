@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style>
+
+    .body {
+      background-color:#f69a73;
+    }
+
+    .main {
+      display: flex;
+      align-items: center;
+      flex-flow: column;
+    }
+
+    .form {
+      min-width: 400px;
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+      background: white;
+      border-radius: 30px;
+      color: #707981;
+      border: 1px solid white;
+      padding: 30px;
+      margin-bottom: 30px;
+    }
+
+    .form-input {
+      margin-bottom: 20px;
+      width: 70%;
+      border-radius: 20px;
+      border-width: 0;
+      background: #E9EFF6;
+      padding:10px;
+      outline: none;
+    }
+
+    .btn {
+      outline: none;
+      background: none;
+      cursor: pointer;
+      border: 3px solid transparent;
+      background-color: #f69a73;
+      border-radius: 20px;
+      width: 75%;
+      color: #707981;
+    }
+
+    .btn:hover {
+      opacity: 1;
+      transition: .3s;
+      border-color: #FF69B4;
+      box-shadow: 0 0 20px rgba(252, 15, 192,.64);
+    }
+
+    .btn:active {
+      border: 3px solid green;
+      box-shadow: 0 0 20px rgba(51, 255, 153, 1);
+    }
+
+    .btn-logout{
+      background-color: white;
+      width: 150px;
+      height: 50px;
+      margin-bottom: 30px;
+    }
+
+    table {
+      font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+      font-size: 14px;
+      border-collapse: collapse;
+      text-align: center;
+    }
+    th, td:first-child {
+      background: #AFCDE7;
+      color: white;
+      padding: 10px 20px;
+    }
+    th, td {
+      border-style: solid;
+      border-width: 0 1px 1px 0;
+      border-color: white;
+    }
+    td {
+      background: #D8E6F3;
+    }
+    th:first-child, td:first-child {
+      text-align: left;
+    }
+
+    .edit {
+      color: #707981;
+    }
+
+    .edit:hover {
+      color: red;
+      transition: .7s;
+      cursor: pointer;
+    }
+
+    .edit:active {
+      color: blue;
+    }
+  </style>
+</head>
+<body class="body">
+<main class="main">
+  <form th:action="@{'/admin/adduser'}" method="post">
+    <fieldset class="form">
+      <input type="text" class="form-input" name="first_name" placeholder="First name">
+      <input type="text" class="form-input" name="last_name" placeholder="Last name">
+      <input type="email" class="form-input" name="email" placeholder="Email">
+      <input type="text" class="form-input" name="username" placeholder="Username">
+      <input type="password" class="form-input" name="password" placeholder="Password">
+      <input  class="form-input" list="role" type="text" placeholder="role" name="role">
+      <datalist id="role">
+        <option value="ROLE_USER">ROLE_USER</option>
+        <option value="ROLE_ADMIN">ROLE_ADMIN</option>
+      </datalist>
+      <button class="btn" type="submit">Add User</button>
+    </fieldset>
+  </form>
+  <form th:action="@{'/logout'}" method="POST">
+    <button class="btn btn-logout">Logout</button>
+  </form>
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Email</th>
+      <th>Username</th>
+      <th>Password</th>
+      <th>Role</th>
+      <th>Details</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each = "user : ${users}">
+      <td th:text = "${user.id}"></td>
+      <td th:text = "${user.firstName}"></td>
+      <td th:text = "${user.lastName}"></td>
+      <td th:text = "${user.email}"></td>
+      <td th:text = "${user.username}"></td>
+      <td th:text = "${user.password}"></td>
+      <td>
+        <div th:each="role: ${user.getRoles()}" class="div_to_left">
+          <div th:text="${role.role}"></div>
+        </div>
+      </td>
+      <td>
+        <a th:href="@{'/admin/edit/' + ${user.id}}" class="edit">Edit</a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</main>
+</body>
+</html>

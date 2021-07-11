@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .body {
+            background-color:#f69a73;
+        }
+
+        .main {
+            display: flex;
+            align-items: center;
+            flex-flow: column;
+        }
+
+        .form {
+            min-width: 400px;
+            display: flex;
+            flex-flow: column;
+            align-items: center;
+            background: white;
+            border-radius: 30px;
+            color: #707981;
+            border: 1px solid white;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .form-input {
+            margin-bottom: 20px;
+            width: 70%;
+            border-radius: 20px;
+            border-width: 0;
+            background: #E9EFF6;
+            padding:10px;
+            outline: none;
+        }
+
+        .btn {
+            outline: none;
+            background: none;
+            cursor: pointer;
+            border: 3px solid transparent;
+            background-color: #f69a73;
+            border-radius: 20px;
+            width: 75%;
+            color: #707981;
+        }
+
+        .btn-save {
+            margin-bottom: 20px;
+        }
+
+        .btn:hover {
+            opacity: 1;
+            transition: .3s;
+            border-color: #FF69B4;
+            box-shadow: 0 0 20px rgba(252, 15, 192,.64);
+        }
+
+        .btn:active {
+            border: 3px solid green;
+            box-shadow: 0 0 20px rgba(51, 255, 153, 1);
+        }
+
+        .btn-logout {
+            background-color: white;
+            width: 150px;
+            height: 50px;
+            margin-bottom: 30px;
+        }
+        .select {
+            width: 75%;
+        }
+    </style>
+</head>
+<body class="body">
+<main class="main">
+    <form th:action="@{'/admin/saveuser'}" method="post">
+        <fieldset class="form">
+            <input type="hidden" name="id" th:value="${user.id}">
+            <input type="text" class="form-input" name="first_name" placeholder="First name" th:value="${user!=null?user.firstName:''}">
+            <input type="text" class="form-input" name="last_name" placeholder="Last name" th:value="${user!=null?user.lastName:''}">
+            <input type="email" class="form-input" name="email" placeholder="Email" th:value="${user!=null?user.email:''}">
+            <input type="text" class="form-input" name="username" placeholder="Username" th:value="${user!=null?user.username:''}">
+            <input type="password" class="form-input" name="password" placeholder="Password" th:value="${user!=null?user.password:''}">
+            <select  class="form-input select" list="role" type="text" placeholder="role" name="role" value="ROLE_USER">
+                <option value="ROLE_USER">ROLE_USER</option>
+                <option value="ROLE_ADMIN">ROLE_ADMIN</option>
+            </select>
+
+            <button class="btn btn-save" type="submit">Save</button>
+
+        </fieldset>
+
+    </form>
+    <form th:action="@{'/admin/deleteuser'}" id="deleteModal" method="post">
+        <input type="hidden" name="id" th:value="${user.id}">
+        <button class="btn btn-logout" type="submit">Delete</button>
+    </form>
+    <form th:action="@{'/logout'}" method="POST">
+        <button class="btn btn-logout">Logout</button>
+    </form>
+</main>
+
+</body>
+</html>

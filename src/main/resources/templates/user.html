@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<head>
+    <meta charset="UTF-8">
+    <title>User</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;500&display=swap" rel="stylesheet">
+    <style>
+        .body {
+            font-family:'Montserrat', sans-serif;
+        }
+
+        .main {
+            display: flex;
+            align-items: center;
+            flex-flow: column;
+        }
+
+        .info-list {
+            border: 2px solid aqua;
+            border-radius: 10px;
+            min-width: 500px;
+            margin: 0;
+            padding: 0;
+            background-color: lightblue;
+            margin-bottom: 30px;
+        }
+
+        .info-list__item {
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .info-list__item:not(:last-child) {
+            border-bottom: 2px solid white;
+        }
+
+        .info-list__name {
+            font-weight: 500;
+        }
+
+        .info-list__value {
+            font-weight: 200;
+        }
+
+        .logou-btn {
+            outline: none;
+            background: none;
+            cursor: pointer;
+            border: 3px solid transparent;
+            background-color: tomato;
+            border-radius: 20px;
+            width: 150px;
+            height: 50px;
+        }
+
+        .logou-btn:hover {
+            opacity: 1;
+            transition: .3s;
+            border-color: #FF69B4;
+            box-shadow: 0 0 20px rgba(252, 15, 192,.64);
+        }
+
+        .logou-btn:active {
+            border: 3px solid green;
+            box-shadow: 0 0 20px rgba(51, 255, 153, 1);
+        }
+    </style>
+</head>
+<body class="body">
+<main class="main">
+    <ul class="info-list" style="border: 2px solid aqua;
+  border-radius: 10px;
+  min-width: 500px;
+  margin: 0;
+  padding: 0;
+  background-color: lightblue;
+  margin-bottom: 30px;">
+        <li class="info-list__item">
+            <span class="info-list__name">First name</span>
+            <span th:text="${currentUser.firstName}" class="info-list__value"></span>
+        </li>
+        <li class="info-list__item">
+            <span class="info-list__name">Last name</span>
+            <span th:text="${currentUser.lastName}" class="info-list__value"></span>
+        </li>
+        <li class="info-list__item">
+            <span class="info-list__name">Email </span>
+            <span th:text="${currentUser.email}" class="info-list__value"></span>
+        </li>
+        <li class="info-list__item">
+            <span class="info-list__name">Username </span>
+            <span th:text="${currentUser.username}" class="info-list__value"></span>
+        </li>
+        <li class="info-list__item">
+            <span class="info-list__name">Password</span>
+            <span th:text="${currentUser.password}" class="info-list__value"></span>
+        </li>
+        <li class="info-list__item">
+            <span class="info-list__name">Your current roles:</span>
+            <span th:each="role : ${currentUser.getRoles()}" class="info-list__value">
+                <span th:text="${role.role}" class="info-list__value"></span>
+            </span>
+
+        </li>
+    </ul>
+    <form th:action="@{'/logout'}" method="POST">
+        <button class="logou-btn">Logout</button>
+    </form>
+</main>
+</body>
+</html>
