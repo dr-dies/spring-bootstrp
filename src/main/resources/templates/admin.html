@@ -112,13 +112,13 @@
 </head>
 <body class="body">
 <main class="main">
-  <form th:action="@{'/admin/adduser'}" method="post">
+  <form th:method="POST" th:action="@{/admin/adduser}" th:object="${userAdd}">
     <fieldset class="form">
-      <input type="text" class="form-input" name="first_name" placeholder="First name">
-      <input type="text" class="form-input" name="last_name" placeholder="Last name">
-      <input type="email" class="form-input" name="email" placeholder="Email">
-      <input type="text" class="form-input" name="username" placeholder="Username">
-      <input type="password" class="form-input" name="password" placeholder="Password">
+      <input type="text" name="firstName" id="firstName" class  ="form-input">
+      <input type="text" name="lastName" id="lastName" class="form-input">
+      <input type="text" name="email" id="email" class="form-input">
+      <input type="text" name="username" id="username" class="form-input">
+      <input type="text" name="password" id="password" class="form-input">
       <input  class="form-input" list="role" type="text" placeholder="role" name="role">
       <datalist id="role">
         <option value="ROLE_USER">ROLE_USER</option>

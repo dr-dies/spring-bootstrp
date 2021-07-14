@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserService {
@@ -33,16 +34,14 @@ public class UserService {
         return userRepository.findByUserName(userName);
     }
 
-    public User saveUser(User user) {
+    public User add(User user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        //Role userRole = roleRepository.findByRole("ADMIN");
-        //user.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
         return userRepository.save(user);
     }
     public void delete(User user) {
         userRepository.delete(user);
     }
-    public void edit(User user) {
+    public void update(User user) {
         userRepository.saveAndFlush(user);
     }
     public User getById(Long id) {
@@ -51,7 +50,14 @@ public class UserService {
     public List<User> allUsers() {
         return userRepository.findAll();
     }
-    public List<Role> getRoles() {
-        return roleRepository.findAll();
+    public Set<Role> getRole(String role) {
+        List<Role> roles = roleRepository.findAll();
+        if(role.equals(roles.get(0).getRole())) {
+            roles.remove(1);
+        } else {
+            roles.remove(0);
+        }
+        return new HashSet<Role>(roles);
     }
+
 }

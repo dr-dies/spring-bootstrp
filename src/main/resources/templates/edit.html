@@ -81,14 +81,23 @@
 </head>
 <body class="body">
 <main class="main">
-    <form th:action="@{'/admin/saveuser'}" method="post">
+    <form th:action="@{/admin/edit/{id}(id=${user.getId()})}" th:method="PATCH" th:object="${user}">
         <fieldset class="form">
-            <input type="hidden" name="id" th:value="${user.id}">
-            <input type="text" class="form-input" name="first_name" placeholder="First name" th:value="${user!=null?user.firstName:''}">
-            <input type="text" class="form-input" name="last_name" placeholder="Last name" th:value="${user!=null?user.lastName:''}">
-            <input type="email" class="form-input" name="email" placeholder="Email" th:value="${user!=null?user.email:''}">
-            <input type="text" class="form-input" name="username" placeholder="Username" th:value="${user!=null?user.username:''}">
-            <input type="password" class="form-input" name="password" placeholder="Password" th:value="${user!=null?user.password:''}">
+            <label for="firstName">Name</label>
+            <input type="text" th:field="*{firstName}" id="firstName" class="form-input">
+
+            <label for="lastName">Last name</label>
+            <input type="text" th:field="*{lastName}" id="lastName" class="form-input">
+
+            <label for="email">E-mail</label>
+            <input type="text" th:field="*{email}" id="email" class="form-input">
+
+            <label for="username">User</label>
+            <input type="text" th:field="*{username}" id="username" class="form-input">
+
+            <label for="password">Password</label>
+            <input type="text" th:field="*{password}" id="password" class="form-input">
+
             <select  class="form-input select" list="role" type="text" placeholder="role" name="role" value="ROLE_USER">
                 <option value="ROLE_USER">ROLE_USER</option>
                 <option value="ROLE_ADMIN">ROLE_ADMIN</option>
@@ -99,8 +108,8 @@
         </fieldset>
 
     </form>
-    <form th:action="@{'/admin/deleteuser'}" id="deleteModal" method="post">
-        <input type="hidden" name="id" th:value="${user.id}">
+    <form th:method="DELETE" th:action="@{/admin/delete/{id}(id=${user.getId()})}" id="deleteModal">
+        <input type="hidden" name="id" th:value="${user.getId()}">
         <button class="btn btn-logout" type="submit">Delete</button>
     </form>
     <form th:action="@{'/logout'}" method="POST">

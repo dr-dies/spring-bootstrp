@@ -10,17 +10,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 
 import java.util.HashSet;
 import java.util.List;
 
-@Controller
+
+@RestController
 public class UserController {
 
 
@@ -47,79 +45,55 @@ public class UserController {
         return modelAndView;
     }
 
-    @GetMapping("admin")
-    public String index(Model model) {
+    @GetMapping("/admin")
+    public ModelAndView index(ModelAndView modelAndView) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.findUserByUserName(auth.getName());
         List<User> users = userService.allUsers();
-        model.addAttribute("users", users);
+        modelAndView.addObject("users", users);
 
-        return "admin";
+        return modelAndView;
     }
     @PostMapping("/admin/adduser")
-    public String addUser(@RequestParam(name = "first_name", defaultValue = "---") String firstName,
-                          @RequestParam(name = "last_name", defaultValue = "---") String lastName,
-                          @RequestParam(name = "email", defaultValue = "---") String email,
-                          @RequestParam(name = "username") String username,
-                          @RequestParam(name = "password") String password,
-                          @RequestParam(name = "role") String role) {
-
-        List<Role> roles = userService.getRoles();
-        if(role.equals(roles.get(0).getRole())) {
-            roles.remove(1);
-        } else {
-            roles.remove(0);
-        }
-        User user = new User(firstName, lastName, email, username, password);
-        user.setRoles(new HashSet<>(roles));
-        userService.saveUser(user);
-
-        return "redirect:/admin";
+    public ModelAndView addUser(ModelAndView modelAndView,
+                                @ModelAttribute("userAdd") User user,
+                                @RequestParam(name = "role") String role) {
+        user.setRoles(userService.getRole(role));
+        userService.add(user);
+        modelAndView.setViewName("redirect:/admin");
+        return modelAndView;
     }
     @GetMapping("/admin/edit/{id}")
-    public String details(Model model, @PathVariable(name = "id") Long id) {
+    public ModelAndView details(ModelAndView modelAndView, @PathVariable(name = "id") Long id) {
         User user = userService.getById(id);
         if (user == null) {
-            return "redirect:/admin";
+            modelAndView.setViewName("redirect:/admin");
+            return modelAndView;
         }
-        model.addAttribute("user", user);
-
-        return "edit";
+        modelAndView.addObject("user", user);
+        modelAndView.setViewName("edit");
+        return  modelAndView;
     }
 
-    @PostMapping("/admin/saveuser")
-    public String saveUser(@RequestParam(name = "id") Long id,
-                           @RequestParam(name = "first_name") String firstName,
-                           @RequestParam(name = "last_name") String lastName,
-                           @RequestParam(name = "email") String email,
-                           @RequestParam(name = "username") String username,
-                           @RequestParam(name = "password") String password,
-                           @RequestParam(name = "role") String role) {
-
-        User user = userService.getById(id);
-        List<Role> roles = userService.getRoles();
-        if(role.equals(roles.get(0).getRole())) {
-            roles.remove(1);
-        } else {
-            roles.remove(0);
-        }
+    @RequestMapping(value = "/admin/edit/{id}", method = RequestMethod.PATCH)
+    public ModelAndView edit(ModelAndView modelAndView,
+                             @ModelAttribute("user") User user,
+                             @RequestParam(name = "role") String role) {
+        modelAndView.setViewName("redirect:/admin");
         if (user != null) {
-            user.setFirstName(firstName);
-            user.setLastName(lastName);
-            user.setEmail(email);
-            user.setUsername(username);
-            user.setPassword(password);
-            user.setRoles(new HashSet<>(roles));
-            userService.edit(user);
+            user.setRoles(userService.getRole(role));
+            userService.update(user);
         }
 
-        return "redirect:/admin";
+        return modelAndView;
     }
 
-    @PostMapping("/admin/deleteuser")
-    public String deleteUser(@RequestParam(name = "id") Long id) {
-
+    @RequestMapping(value = "/admin/delete/{id}",method =RequestMethod.DELETE)
+    @ResponseBody
+    public ModelAndView deleteUser(ModelAndView modelAndView, @PathVariable Long id) {
+        modelAndView.setViewName("redirect:/admin");
         userService.delete(userService.getById(id));
-
-        return "redirect:/admin";
+        return modelAndView;
     }
 
     private User getUserData() {
