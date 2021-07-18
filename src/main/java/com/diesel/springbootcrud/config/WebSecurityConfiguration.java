@@ -38,7 +38,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         http.formLogin()
                 .successHandler(new LoginSuccessHandler())
-                .usernameParameter("username")
+                .usernameParameter("email")
                 .passwordParameter("password")
                 .permitAll();
 
@@ -48,8 +48,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .logoutSuccessUrl("/login");
 
         http.authorizeRequests()
-                .antMatchers("/admin/**").access("hasAnyRole('ADMIN')")
-                .antMatchers("/user/**").access("hasAnyRole('USER','ADMIN')");
+                .antMatchers("/admin").access("hasAnyRole('ADMIN')")
+                .antMatchers("/user").access("hasAnyRole('USER','ADMIN')");
     }
     @Autowired
     public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
@@ -61,5 +61,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+
 
 }

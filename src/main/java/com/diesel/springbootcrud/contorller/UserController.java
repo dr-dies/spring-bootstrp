@@ -5,20 +5,20 @@ import com.diesel.springbootcrud.entity.Role;
 import com.diesel.springbootcrud.entity.User;
 import com.diesel.springbootcrud.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-
-import java.util.HashSet;
 import java.util.List;
 
 
-@RestController
+@Controller
 public class UserController {
 
 
@@ -30,81 +30,50 @@ public class UserController {
         return "redirect:login";
     }
 
-    @GetMapping(value = "/login")
-    public String login(Model model) {
+    @GetMapping(value = "/user")
+    public String user(Model model) {
         model.addAttribute("currentUser", getUserData());
-        return "login";
+        return "user";
     }
-    @GetMapping(value = "user")
-    public ModelAndView home(){
-        ModelAndView modelAndView = new ModelAndView();
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.findUserByUserName(auth.getName());
-        modelAndView.addObject("currentUser", userService.findUserByUserName(user.getUsername()));
-        modelAndView.setViewName("user");
-        return modelAndView;
-    }
-
     @GetMapping("/admin")
-    public ModelAndView index(ModelAndView modelAndView) {
+    public String index(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.findUserByUserName(auth.getName());
+        User user = userService.findUserByEmail(auth.getName());
         List<User> users = userService.allUsers();
-        modelAndView.addObject("users", users);
-
-        return modelAndView;
+        model.addAttribute("users", users);
+        return "admin";
     }
     @PostMapping("/admin/adduser")
-    public ModelAndView addUser(ModelAndView modelAndView,
-                                @ModelAttribute("userAdd") User user,
-                                @RequestParam(name = "role") String role) {
+    public String addUser(@ModelAttribute("userAdd") User user,
+                          @RequestParam(name = "role") String role) {
         user.setRoles(userService.getRole(role));
         userService.add(user);
-        modelAndView.setViewName("redirect:/admin");
-        return modelAndView;
-    }
-    @GetMapping("/admin/edit/{id}")
-    public ModelAndView details(ModelAndView modelAndView, @PathVariable(name = "id") Long id) {
-        User user = userService.getById(id);
-        if (user == null) {
-            modelAndView.setViewName("redirect:/admin");
-            return modelAndView;
-        }
-        modelAndView.addObject("user", user);
-        modelAndView.setViewName("edit");
-        return  modelAndView;
-    }
 
+        return "redirect:/admin";
+    }
     @RequestMapping(value = "/admin/edit/{id}", method = RequestMethod.PATCH)
-    public ModelAndView edit(ModelAndView modelAndView,
-                             @ModelAttribute("user") User user,
-                             @RequestParam(name = "role") String role) {
-        modelAndView.setViewName("redirect:/admin");
+    public String edit(@ModelAttribute("user") User user,
+                       @RequestParam(name = "role") String role) {
         if (user != null) {
             user.setRoles(userService.getRole(role));
             userService.update(user);
         }
 
-        return modelAndView;
+        return "redirect:/admin";
     }
-
-    @RequestMapping(value = "/admin/delete/{id}",method =RequestMethod.DELETE)
-    @ResponseBody
-    public ModelAndView deleteUser(ModelAndView modelAndView, @PathVariable Long id) {
-        modelAndView.setViewName("redirect:/admin");
+    @RequestMapping(value = "/admin/delete/{id}",method = RequestMethod.DELETE)
+    public String deleteUser(@PathVariable Long id) {
         userService.delete(userService.getById(id));
-        return modelAndView;
+        return "redirect:/admin";
     }
 
     private User getUserData() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            User secUser = (User) authentication.getPrincipal();
-            return userService.findUserByUserName(secUser.getUsername());
+            UserDetails user = (UserDetails) authentication.getPrincipal();
+            return userService.findUserByEmail(user.getUsername());
         }
 
         return null;
     }
-
-
 }

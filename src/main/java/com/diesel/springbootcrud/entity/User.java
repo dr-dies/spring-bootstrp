@@ -16,25 +16,17 @@ public class User implements UserDetails {
     @Column(name = "id")
     private Long id;
 
-    @Column (name = "first_name")
+    @Column (name = "first_name", nullable = false)
     private String firstName;
 
     @Column (name = "last_name")
     private String lastName;
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    @Column (name = "email")
+    @Column (name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column (name = "username", nullable = false, unique = true)
-    private String userName;
+    @Column (name = "age", nullable = false)
+    private byte age;
 
     @Column (name = "password")
     private String password;
@@ -51,12 +43,19 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-    public User(String firstName, String lastName, String email, String userName, String password) {
+    public User(String firstName, String lastName, String email, byte age, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.userName = userName;
+        this.age = age;
         this.password = password;
+    }
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Long getId() {
@@ -79,12 +78,16 @@ public class User implements UserDetails {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public byte getAge() {
+        return age;
     }
 
-    public void setUsername(String userName) {
-        this.userName = userName;
+    public void setAge(byte age) {
+        this.age = age;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public void setPassword(String password) {
@@ -99,7 +102,7 @@ public class User implements UserDetails {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email=" + email +
-                ", username='" + userName + '\'' +
+                ", username='" + age + '\'' +
                 ", password='" + password + '\'' +
                 '}';
     }
@@ -116,7 +119,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return userName;
+        return email;
     }
 
     @Override

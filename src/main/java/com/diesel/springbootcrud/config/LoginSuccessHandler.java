@@ -12,7 +12,6 @@ import java.util.Set;
 
 @Component
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
-
     @Override
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest,
                                         HttpServletResponse httpServletResponse,
@@ -28,5 +27,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
             httpServletResponse.sendRedirect("/login");
         }
     }
+
 
 }

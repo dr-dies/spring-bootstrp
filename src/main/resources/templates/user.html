@@ -1,120 +1,85 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html lang="en">
 <head>
 <head>
     <meta charset="UTF-8">
-    <title>User</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;500&display=swap" rel="stylesheet">
+    <title>All Users</title>
     <style>
-        .body {
-            font-family:'Montserrat', sans-serif;
-        }
 
-        .main {
-            display: flex;
-            align-items: center;
-            flex-flow: column;
-        }
-
-        .info-list {
-            border: 2px solid aqua;
-            border-radius: 10px;
-            min-width: 500px;
-            margin: 0;
-            padding: 0;
-            background-color: lightblue;
-            margin-bottom: 30px;
-        }
-
-        .info-list__item {
-            list-style: none;
-            display: flex;
-            justify-content: space-between;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-
-        .info-list__item:not(:last-child) {
-            border-bottom: 2px solid white;
-        }
-
-        .info-list__name {
-            font-weight: 500;
-        }
-
-        .info-list__value {
-            font-weight: 200;
-        }
-
-        .logou-btn {
-            outline: none;
-            background: none;
-            cursor: pointer;
-            border: 3px solid transparent;
-            background-color: tomato;
-            border-radius: 20px;
-            width: 150px;
-            height: 50px;
-        }
-
-        .logou-btn:hover {
-            opacity: 1;
-            transition: .3s;
-            border-color: #FF69B4;
-            box-shadow: 0 0 20px rgba(252, 15, 192,.64);
-        }
-
-        .logou-btn:active {
-            border: 3px solid green;
-            box-shadow: 0 0 20px rgba(51, 255, 153, 1);
-        }
     </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
-<body class="body">
-<main class="main">
-    <ul class="info-list" style="border: 2px solid aqua;
-  border-radius: 10px;
-  min-width: 500px;
-  margin: 0;
-  padding: 0;
-  background-color: lightblue;
-  margin-bottom: 30px;">
-        <li class="info-list__item">
-            <span class="info-list__name">First name</span>
-            <span th:text="${currentUser.firstName}" class="info-list__value"></span>
-        </li>
-        <li class="info-list__item">
-            <span class="info-list__name">Last name</span>
-            <span th:text="${currentUser.lastName}" class="info-list__value"></span>
-        </li>
-        <li class="info-list__item">
-            <span class="info-list__name">Email </span>
-            <span th:text="${currentUser.email}" class="info-list__value"></span>
-        </li>
-        <li class="info-list__item">
-            <span class="info-list__name">Username </span>
-            <span th:text="${currentUser.username}" class="info-list__value"></span>
-        </li>
-        <li class="info-list__item">
-            <span class="info-list__name">Password</span>
-            <span th:text="${currentUser.password}" class="info-list__value"></span>
-        </li>
-        <li class="info-list__item">
-            <span class="info-list__name">Your current roles:</span>
-            <span th:each="role : ${currentUser.getRoles()}" class="info-list__value">
-                <span th:text="${role.role}" class="info-list__value"></span>
-            </span>
+<body>
+<header>
+    <nav class="navbar navbar-dark bg-dark">
+        <a class="navbar-brand text-white m-2" href="#">
+            <h4>
+                <span sec:authentication="name"></span> with roles:
+                <span th:each="authority : ${#authentication.getAuthorities()}"
+                      th:if="${authority.getAuthority().startsWith('ROLE_')}"
+                      th:text="${authority.getAuthority().replaceFirst('ROLE_', '')}">
+                </span>
+            </h4>
+        </a>
+        <form class="form-inline my-2 my-lg-0">
+            <a class="nav-link text-white" href="http://localhost:8090/logout">Logout</a>
+        </form>
+    </nav>
 
-        </li>
-    </ul>
-    <form th:action="@{'/logout'}" method="POST">
-        <button class="logou-btn">Logout</button>
-    </form>
-</main>
+</header>
+<div class="container-fluid">
+    <div class="row align-items-top p-4 ">
+        <div class="col-2 ml-auto">
+            <div class="list-group">
+                <a href="/admin" type="button" class="list-group-item list-group-item-action" sec:authorize="hasRole('ROLE_ADMIN')">
+                    Admin
+                </a>
+                <a class="list-group-item list-group-item-action active" role="button" aria-pressed="true">User</a>
+            </div>
+        </div>
+        <div class="col-10">
+            <h1>User information-page</h1>
+            <div class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <b><h5>About User</h5></b>
+                    </div>
+                    <div class="card-body">
+                        <table cellspacing="2" class="table table-striped border">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Last Name</th>
+                                <th>Age</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <th><span th:text="${currentUser.id}"></span></th>
+                                <th><span th:text="${currentUser.firstName}"></span></th>
+                                <th><span th:text="${currentUser.lastName}"></span></th>
+                                <th><span th:text="${currentUser.age}"></span></th>
+                                <th><span th:text="${currentUser.email}"></span></th>
+                                <th>
+                                    <span th:each="authority : ${#authentication.getAuthorities()}"
+                                          th:if="${authority.getAuthority().startsWith('ROLE_')}"
+                                          th:text="${authority.getAuthority().replaceFirst('ROLE_', '')}">
+                                    </span>
+                                </th>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
