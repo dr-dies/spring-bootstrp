@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -50,14 +47,12 @@ public class UserService {
     public List<User> allUsers() {
         return userRepository.findAll();
     }
+
+
     public Set<Role> getRole(String role) {
-        List<Role> roles = roleRepository.findAll();
-        if(role.equals(roles.get(0).getRole())) {
-            roles.remove(1);
-        } else {
-            roles.remove(0);
-        }
-        return new HashSet<Role>(roles);
+        Set<Role> roles = new HashSet<>();
+        roles.add(roleRepository.findByRole(role));
+        return roles;
     }
 
 }
