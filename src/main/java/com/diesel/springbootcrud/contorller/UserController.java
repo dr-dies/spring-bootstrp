@@ -1,19 +1,16 @@
 package com.diesel.springbootcrud.contorller;
 
 
-import com.diesel.springbootcrud.entity.Role;
 import com.diesel.springbootcrud.entity.User;
-import com.diesel.springbootcrud.service.UserService;
+import com.diesel.springbootcrud.service.RoleServiceImpl;
+import com.diesel.springbootcrud.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
+
 
 import java.util.List;
 
@@ -23,7 +20,9 @@ public class UserController {
 
 
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userServiceImpl;
+    @Autowired
+    private RoleServiceImpl roleServiceImpl;
 
     @GetMapping(value = "/")
     public String getLoginPage() {
@@ -32,21 +31,21 @@ public class UserController {
 
     @GetMapping(value = "/user")
     public String user(Model model) {
-        model.addAttribute("currentUser", getUserData());
+        UserDetails user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        model.addAttribute("currentUser", userServiceImpl.findUserByEmail(user.getUsername()));
         return "user";
     }
     @GetMapping("/admin")
     public String index(Model model) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<User> users = userService.allUsers();
+        List<User> users = userServiceImpl.allUsers();
         model.addAttribute("users", users);
         return "admin";
     }
     @PostMapping("/admin/adduser")
     public String addUser(@ModelAttribute("userAdd") User user,
                           @RequestParam(name = "role") String role) {
-        user.setRoles(userService.getRole(role));
-        userService.add(user);
+        user.setRoles(roleServiceImpl.getRole(role));
+        userServiceImpl.add(user);
 
         return "redirect:/admin";
     }
@@ -54,25 +53,17 @@ public class UserController {
     public String edit(@ModelAttribute("user") User user,
                        @RequestParam(name = "role") String role) {
         if (user != null) {
-            user.setRoles(userService.getRole(role));
-            userService.update(user);
+            user.setRoles(roleServiceImpl.getRole(role));
+            userServiceImpl.update(user);
         }
 
         return "redirect:/admin";
     }
     @RequestMapping(value = "/admin/delete/{id}",method = RequestMethod.DELETE)
     public String deleteUser(@PathVariable Long id) {
-        userService.delete(userService.getById(id));
+        userServiceImpl.delete(userServiceImpl.getById(id));
         return "redirect:/admin";
     }
 
-    private User getUserData() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            UserDetails user = (UserDetails) authentication.getPrincipal();
-            return userService.findUserByEmail(user.getUsername());
-        }
 
-        return null;
-    }
 }
