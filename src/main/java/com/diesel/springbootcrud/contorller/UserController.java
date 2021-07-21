@@ -31,8 +31,8 @@ public class UserController {
 
     @GetMapping(value = "/user")
     public String user(Model model) {
-        UserDetails user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        model.addAttribute("currentUser", userServiceImpl.findUserByEmail(user.getUsername()));
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        model.addAttribute("currentUser", user);
         return "user";
     }
     @GetMapping("/admin")
